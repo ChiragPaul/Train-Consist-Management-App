@@ -1,29 +1,32 @@
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
 
-        LinkedList<String> trainConsist = new LinkedList<>();
+        Set<String> trainFormation = new LinkedHashSet<>();
 
 
-        trainConsist.add("Engine");
-        trainConsist.add("Sleeper");
-        trainConsist.add("AC");
-        trainConsist.add("Cargo");
-        trainConsist.add("Guard");
-
-        System.out.println("Initial Train Consist: " + trainConsist);
+        trainFormation.add("Engine");
+        trainFormation.add("Sleeper");
+        trainFormation.add("Cargo");
+        trainFormation.add("Guard");
 
 
-        trainConsist.add(2, "Pantry Car");
-        System.out.println("After Adding Pantry Car at position 2: " + trainConsist);
+        System.out.println("Attempting to add duplicate: Sleeper...");
+        boolean isAdded = trainFormation.add("Sleeper");
+
+        if (!isAdded) {
+            System.out.println("Duplicate detected! Bogie 'Sleeper' was not added.\n");
+        }
 
 
-        trainConsist.removeFirst();
-        trainConsist.removeLast();
+        System.out.println("Final Train Formation (Insertion Order Preserved):");
+        for (String bogie : trainFormation) {
+            System.out.println("- " + bogie);
+        }
 
-        System.out.println("After Removing First and Last Bogie: " + trainConsist);
-
-        System.out.println("UC4 ordered consist operations completed...");
+        System.out.println("\nComplete Formation List: " + trainFormation);
+        System.out.println("UC5 formation setup completed");
     }
 }
