@@ -1,32 +1,31 @@
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
 
-        Set<String> trainFormation = new LinkedHashSet<>();
+        HashMap<String, Integer> bogieCapacityMap = new HashMap<>();
 
 
-        trainFormation.add("Engine");
-        trainFormation.add("Sleeper");
-        trainFormation.add("Cargo");
-        trainFormation.add("Guard");
+        bogieCapacityMap.put("Sleeper", 72);
+        bogieCapacityMap.put("AC Chair", 56);
+        bogieCapacityMap.put("First Class", 24);
+        bogieCapacityMap.put("General", 90);
+
+        System.out.println("--- Bogie to Capacity Mapping ---");
 
 
-        System.out.println("Attempting to add duplicate: Sleeper...");
-        boolean isAdded = trainFormation.add("Sleeper");
-
-        if (!isAdded) {
-            System.out.println("Duplicate detected! Bogie 'Sleeper' was not added.\n");
+        for (Map.Entry<String, Integer> entry : bogieCapacityMap.entrySet()) {
+            String bogieName = entry.getKey();
+            Integer capacity = entry.getValue();
+            System.out.println("Bogie: " + bogieName + " | Capacity: " + capacity + " seats");
         }
 
 
-        System.out.println("Final Train Formation (Insertion Order Preserved):");
-        for (String bogie : trainFormation) {
-            System.out.println("- " + bogie);
+        String searchBogie = "Sleeper";
+        if (bogieCapacityMap.containsKey(searchBogie)) {
+            System.out.println("\nFast Lookup: The capacity of " + searchBogie + " is " + bogieCapacityMap.get(searchBogie));
         }
-
-        System.out.println("\nComplete Formation List: " + trainFormation);
-        System.out.println("UC5 formation setup completed");
+        System.out.println("UC6 boogie-capacity mapping completed...");
     }
 }
