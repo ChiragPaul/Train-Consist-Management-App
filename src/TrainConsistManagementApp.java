@@ -1,25 +1,28 @@
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
-        ArrayList<String> passengerBogies = new ArrayList<>();
+        Set<String> bogieIds = new HashSet<>();
 
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        System.out.println("Adding bogie IDs...");
+        bogieIds.add("BG101");
+        bogieIds.add("BG102");
+        bogieIds.add("BG103");
 
-        System.out.println("Initial Train Passenger Consist: " + passengerBogies);
+        System.out.println("Attempting to add duplicate: BG101");
+        boolean isAdded = bogieIds.add("BG101");
 
-        passengerBogies.remove("AC Chair");
-        System.out.println("After removing AC Chair: " + passengerBogies);
+        if (!isAdded) {
+            System.out.println("Bogie ID BG101 already exists. HashSet ignored the duplicate.");
+        }
 
-        boolean hasSleeper = passengerBogies.contains("Sleeper");
-        System.out.println("Checking if 'Sleeper' exists:");
-        System.out.println("Contains Sleeper? : " + hasSleeper);
+        System.out.println("\nFinal List of Unique Bogie IDs:");
+        for (String id : bogieIds) {
+            System.out.println("Bogie ID: " + id);
+        }
 
-        System.out.println("\nFinal Train Passenger Consist:");
-        System.out.println(passengerBogies);
-
-        System.out.println("\nUC2 operations completed successfully...");
+        System.out.println("\nTotal Unique Bogies: " + bogieIds.size());
+        System.out.println("UC3 uniqueness validation completed.........");
     }
 }
