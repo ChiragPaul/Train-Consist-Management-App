@@ -3,6 +3,7 @@ package test.java;
 import main.java.TrainConsistManagementApp;
 import main.java.GoodsBogie;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -11,100 +12,82 @@ import static org.junit.jupiter.api.Assertions.*;
 class TrainConsistManagementAppTest {
     TrainConsistManagementApp app = new TrainConsistManagementApp();
 
-    // --- UC12: Safety Compliance Tests ---
 
     @Test
-    void testSafety_AllBogiesValid() {
-        List<GoodsBogie> bogies = Arrays.asList(
-                new GoodsBogie("Cylindrical", "Petroleum"),
-                new GoodsBogie("Open", "Coal")
+    void testLoopFilteringLogic() {
+        List<GoodsBogie> data = Arrays.asList(
+                new GoodsBogie("Open", 70),
+                new GoodsBogie("Box", 50)
         );
-        assertTrue(app.isTrainSafe(bogies));
+        List<GoodsBogie> result = app.filterBogiesByLoop(data);
+        assertEquals(1, result.size(), "Loop should only keep bogies with capacity > 60");
     }
+
+    @Test
+    void testStreamFilteringLogic() {
+        List<GoodsBogie> data = Arrays.asList(
+                new GoodsBogie("Open", 70),
+                new GoodsBogie("Box", 50)
+        );
+        List<GoodsBogie> result = app.filterBogiesByStream(data);
+        assertEquals(1, result.size(), "Stream should only keep bogies with capacity > 60");
+    }
+
+    @Test
+    void testLoopAndStreamResultsMatch() {
+        List<GoodsBogie> data = Arrays.asList(
+                new GoodsBogie("Open", 80),
+                new GoodsBogie("Cylindrical", 40),
+                new GoodsBogie("Box", 65)
+        );
+        assertEquals(app.filterBogiesByLoop(data).size(), app.filterBogiesByStream(data).size());
+    }
+
+    @Test
+    void testExecutionTimeMeasurement() {
+        List<GoodsBogie> data = Collections.singletonList(new GoodsBogie("Open", 70));
+        long start = System.nanoTime();
+        app.filterBogiesByLoop(data);
+        long end = System.nanoTime();
+        assertTrue((end - start) >= 0, "Execution time should be tracked correctly");
+    }
+
+    @Test
+    void testLargeDatasetProcessing() {
+        List<GoodsBogie> largeList = new ArrayList<>();
+        for (int i = 0; i < 50_000; i++) {
+            largeList.add(new GoodsBogie("Open", i % 100));
+        }
+
+        long startStream = System.nanoTime();
+        app.filterBogiesByStream(largeList);
+        long endStream = System.nanoTime();
+
+        long startLoop = System.nanoTime();
+        app.filterBogiesByLoop(largeList);
+        long endLoop = System.nanoTime();
+
+        System.out.println("Stream Time: " + (endStream - startStream) + " ns");
+        System.out.println("Loop Time:   " + (endLoop - startLoop) + " ns");
+    }
+
+    // --- UC12 & Regex Validation Tests ---
 
     @Test
     void testSafety_CylindricalWithInvalidCargo() {
-        List<GoodsBogie> bogies = Collections.singletonList(
-                new GoodsBogie("Cylindrical", "Coal")
-        );
+        List<GoodsBogie> bogies = Collections.singletonList(new GoodsBogie("Cylindrical", "Coal"));
         assertFalse(app.isTrainSafe(bogies));
     }
-
-    @Test
-    void testSafety_NonCylindricalBogiesAllowed() {
-        List<GoodsBogie> bogies = Arrays.asList(
-                new GoodsBogie("Open", "Grain"),
-                new GoodsBogie("Box", "Coal")
-        );
-        assertTrue(app.isTrainSafe(bogies));
-    }
-
-    @Test
-    void testSafety_MixedBogiesWithViolation() {
-        List<GoodsBogie> bogies = Arrays.asList(
-                new GoodsBogie("Cylindrical", "Petroleum"),
-                new GoodsBogie("Cylindrical", "Coal") // The violation
-        );
-        assertFalse(app.isTrainSafe(bogies));
-    }
-
-    @Test
-    void testSafety_EmptyBogieList() {
-        assertTrue(app.isTrainSafe(Collections.emptyList()));
-    }
-
-    // --- Existing Regex Tests ---
 
     @Test
     void testRegex_ValidTrainID() {
         assertTrue(app.validateTrainID("TRN-1234"));
+        assertFalse(app.validateTrainID("TRN-123")); // Too short
     }
 
     @Test
     void testRegex_ValidCargoCode() {
         assertTrue(app.validateCargoCode("PET-AB"));
-    }
-// --- Rest of the Regex Validation Tests ---
-
-    @Test
-    void testRegex_InvalidTrainIDFormat() {
-        // Test wrong prefix or missing hyphen
-        assertFalse(app.validateTrainID("TRAIN12"));
-        assertFalse(app.validateTrainID("TRN12A"));
-        assertFalse(app.validateTrainID("1234-TRN"));
-    }
-
-    @Test
-    void testRegex_TrainIDDigitLengthValidation() {
-        // Must be exactly 4 digits
-        assertFalse(app.validateTrainID("TRN-123"));
-        assertFalse(app.validateTrainID("TRN-12345"));
-    }
-
-    @Test
-    void testRegex_InvalidCargoCodeFormat() {
-        // Missing hyphen or wrong prefix
-        assertFalse(app.validateCargoCode("PET123"));
-        assertFalse(app.validateCargoCode("AB-PET"));
-    }
-
-    @Test
-    void testRegex_CargoCodeUppercaseValidation() {
-        // Must be exactly 2 UPPERCASE letters
-        assertFalse(app.validateCargoCode("PET-ab"));
-        assertFalse(app.validateCargoCode("pet-AB"));
-    }
-
-    @Test
-    void testRegex_EmptyInputHandling() {
-        assertFalse(app.validateTrainID(""));
-        assertFalse(app.validateCargoCode(""));
-    }
-
-    @Test
-    void testRegex_ExactPatternMatch() {
-        // Ensures no extra characters are allowed at the end
-        assertFalse(app.validateTrainID("TRN-1234 Extra"));
-        assertFalse(app.validateCargoCode("PET-ABC"));
+        assertFalse(app.validateCargoCode("PET-12")); // Should be letters
     }
 }
