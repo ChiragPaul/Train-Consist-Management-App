@@ -9,6 +9,20 @@ public class GoodsBogie {
         this.cargo = cargo;
     }
 
-    public String getType() { return type; }
-    public String getCargo() { return cargo; }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
 }
