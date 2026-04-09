@@ -1,13 +1,11 @@
 package main.java;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class TrainConsistManagementApp {
 
-    // --- UC12: Safety Compliance Logic ---
+    // UC12: Safety Compliance Logic
     public boolean isTrainSafe(List<GoodsBogie> bogies) {
         if (bogies == null) return true;
         return bogies.stream().allMatch(bogie -> {
@@ -18,29 +16,25 @@ public class TrainConsistManagementApp {
         });
     }
 
-    public List<GoodsBogie> filterBogiesByLoop(List<GoodsBogie> bogies) {
-        List<GoodsBogie> filtered = new ArrayList<>();
-        if (bogies == null) return filtered;
-        for (GoodsBogie bogie : bogies) {
-            if (bogie.getCapacity() > 60) {
-                filtered.add(bogie);
-            }
-        }
-        return filtered;
-    }
+    // UC14: Capacity Validation Logic
+    public static class PassengerBogie {
+        private String type;
+        private int capacity;
 
-    public List<GoodsBogie> filterBogiesByStream(List<GoodsBogie> bogies) {
-        if (bogies == null) return new ArrayList<>();
-        return bogies.stream()
-                .filter(bogie -> bogie.getCapacity() > 60)
-                .collect(Collectors.toList());
+        public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
+            if (capacity <= 0) {
+                throw new InvalidCapacityException("Capacity must be greater than zero");
+            }
+            this.type = type;
+            this.capacity = capacity;
+        }
     }
 
     public boolean validateTrainID(String id) {
-        return id != null && Pattern.matches("TRN-\\d{4}", id);
+        return Pattern.matches("TRN-\\d{4}", id);
     }
 
     public boolean validateCargoCode(String code) {
-        return code != null && Pattern.matches("PET-[A-Z]{2}", code);
+        return Pattern.matches("PET-[A-Z]{2}", code);
     }
 }
